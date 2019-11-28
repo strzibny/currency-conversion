@@ -68,4 +68,18 @@ defmodule CurrencyConversion do
   @spec get_currencies(Rates.t()) :: [atom]
   def get_currencies(rates \\ UpdateWorker.get_rates())
   def get_currencies(%Rates{base: base, rates: rates}), do: [base | Map.keys(rates)]
+
+  @doc """
+  Refresh exchange rates
+
+  ### Examples
+
+      iex> CurrencyConversion.refresh_rates()
+      {:ok, %CurrencyConversion.Rates{base: :EUR, rates: %{CHF: 7}}}
+
+  """
+  @spec refresh_rates() :: tuple
+  def refresh_rates do
+    UpdateWorker.refresh()
+  end
 end

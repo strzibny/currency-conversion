@@ -67,11 +67,19 @@ config :currency_conversion,
 
 ## Usage
 
-Only the function `CurrencyConversion.convert/3` is exposed to the user. The library [money](https://github.com/liuggio/money) is used to represent money amounts.
+Only the functions `CurrencyConversion.convert/3`, `CurrencyConversion.get_currencies/1`, and `CurrencyConversion.refresh_rates/0` are exposed to the user. The library [money](https://github.com/liuggio/money) is used to represent money amounts.
 
 ### Example
+
+Change 7 swiss franks to dollars:
 
 ```elixir
 iex> CurrencyConversion.convert(Money.new(7_00, :CHF), :USD)
 %Money{amount: 10_50, currency: :USD}
+```
+Manually refresh exchange rates:
+
+```elixir
+iex> CurrencyConversion.refresh_rates()
+{:ok, ...}
 ```

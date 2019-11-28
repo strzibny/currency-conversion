@@ -40,6 +40,7 @@ defmodule CurrencyConversion.UpdateWorker do
     end
   end
 
+  @spec schedule_refresh() :: any()
   defp schedule_refresh do
     case get_refresh_interval() do
       :manual -> nil
@@ -47,7 +48,8 @@ defmodule CurrencyConversion.UpdateWorker do
     end
   end
 
-  defp refresh do
+  @spec refresh() :: tuple
+  def refresh do
     case get_source().load() do
       {:ok, rates} ->
         Logger.info("Refreshed currency rates.")

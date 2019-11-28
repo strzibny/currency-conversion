@@ -40,4 +40,11 @@ defmodule CurrencyConversionTest do
              ]
     end
   end
+
+  describe "refresh_rates/0" do
+    test "refreshes rates" do
+      assert CurrencyConversion.refresh_rates() ==
+               {:ok, %CurrencyConversion.Rates{base: :EUR, rates: %{CHF: 7}}}
+    end
+  end
 end
