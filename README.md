@@ -31,9 +31,10 @@ end
 - `base_currency` - Change the base currency that is requested when fetching rates
   * Type: `atom`
   * Default: `:EUR`
-- `refresh_interval` - Configure how often the data should be refreshed. (in ms)
-  * Type: `integer`
+- `refresh_interval` - Configure how often the data should be refreshed (in ms) or turn auto-refresh off.
+  * Type: `integer | atom`
   * Default: `86_400_000` (Once per Day)
+  * `:manual` turns auto-refresh off, do refresh yourself
 - `test_rates` - Configure rates for `CurrencyConversion.Source.Test` source
   * Type: `{atom, %{atom: float}}`
   * Default: see `CurrencyConversion.Source.Test.@default_rates`

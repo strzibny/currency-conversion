@@ -17,7 +17,7 @@ defmodule CurrencyConversion.UpdateWorker do
 
   @spec init(:ok) :: {:ok, Rates.t()} | {:stop, any}
   def init(:ok) do
-    Process.send_after(self(), :refresh, get_refresh_interval())
+    schedule_refresh()
 
     case refresh() do
       {:ok, rates} -> {:ok, rates}
@@ -32,11 +32,18 @@ defmodule CurrencyConversion.UpdateWorker do
 
   @spec handle_info(:refresh, Rates.t()) :: {:noreply, Rates.t()}
   def handle_info(:refresh, state) do
-    Process.send_after(self(), :refresh, get_refresh_interval())
+    schedule_refresh()
 
     case refresh() do
       {:ok, rates} -> {:noreply, rates}
       {:error, _} -> {:noreply, state}
+    end
+  end
+
+  defp schedule_refresh do
+    case get_refresh_interval() do
+      :manual -> nil
+      interval -> Process.send_after(self(), :refresh, interval)
     end
   end
 
