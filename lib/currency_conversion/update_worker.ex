@@ -19,9 +19,23 @@ defmodule CurrencyConversion.UpdateWorker do
   def init(:ok) do
     schedule_refresh()
 
-    case refresh() do
-      {:ok, rates} -> {:ok, rates}
-      {:error, binary} -> {:stop, {:error, binary}}
+    # jobs = {Fun, :myfunction, [1, 3]}
+    case {module, function, args} = get_seed() do
+      nil ->
+        case refresh() do
+          {:ok, rates} -> {:ok, rates}
+          {:error, binary} -> {:stop, {:error, binary}}
+        end
+
+      _ ->
+        # jobs = {Fun, :myfunction, [1, 3]}
+        jobs = {module, function, args}
+        {m, f, a} = jobs
+        result = apply(m, f, a)
+
+        # put data with handle_call :put
+
+        {:ok, result}
     end
   end
 
@@ -87,4 +101,8 @@ defmodule CurrencyConversion.UpdateWorker do
 
   @spec get_rates() :: Rates.t()
   def get_rates, do: GenServer.call(@update_worker, :get)
+
+  defp get_seed do
+    Application.get_env(:currency_conversion, :seed)
+  end
 end

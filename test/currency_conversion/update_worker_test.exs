@@ -14,7 +14,24 @@ defmodule CurrencyConversion.UpdateWorkerTest do
     end
   end
 
-  test "initial load called" do
+  test "initial load called by refresh" do
+    capture_log(fn ->
+      Application.stop(:currency_conversion)
+
+      Application.put_env(
+        :currency_conversion,
+        :source,
+        CurrencyConversion.UpdateWorkerTest.Source
+      )
+
+      Application.ensure_started(:logger)
+      Application.ensure_all_started(:currency_conversion)
+    end)
+
+    assert get_rates() == %CurrencyConversion.Rates{base: :CHF, rates: %{}}
+  end
+
+  test "initial load called by provided function" do
     capture_log(fn ->
       Application.stop(:currency_conversion)
 

@@ -82,4 +82,8 @@ defmodule CurrencyConversion do
   def refresh_rates do
     UpdateWorker.refresh_rates()
   end
+
+  def rates do
+    %CurrencyConversion.Rates{base: :CHF, rates: %{}}
+  end
 end
