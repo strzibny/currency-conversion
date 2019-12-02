@@ -1,5 +1,5 @@
 defmodule CurrencyConversionTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   doctest CurrencyConversion
 
   describe "get_currencies/0" do
