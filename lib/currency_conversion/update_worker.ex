@@ -40,12 +40,14 @@ defmodule CurrencyConversion.UpdateWorker do
     end
   end
 
-  @spec schedule_refresh() :: any()
+  @spec schedule_refresh() :: :ok
   defp schedule_refresh do
     case get_refresh_interval() do
       :manual -> Logger.debug("Scheduling refresh was skipped due to manual mode.")
       interval -> Process.send_after(self(), :refresh, interval)
     end
+
+    :ok
   end
 
   @spec refresh() :: tuple
