@@ -30,21 +30,25 @@ defmodule CurrencyConversion.UpdateWorker do
     {:reply, state, state}
   end
 
-  @spec handle_info(:refresh, Rates.t()) :: {:noreply, Rates.t()}
-  def handle_info(:refresh, state) do
+  @spec handle_call(:refresh, any, Rates.t()) ::
+          {:reply, Rates.t(), Rates.t()} | {:reply, {:error, string}, Rates.t()}
+  def handle_call(:refresh, _options, state) do
     schedule_refresh()
 
     case refresh() do
-      {:ok, rates} -> {:noreply, rates}
-      {:error, _} -> {:noreply, state}
+      {:ok, rates} -> {:reply, rates, rates}
+      {:error, error} -> {:reply, {:error, error}, state}
     end
   end
 
   @spec schedule_refresh() :: :ok
   defp schedule_refresh do
     case get_refresh_interval() do
-      :manual -> Logger.debug("Scheduling refresh was skipped due to manual mode.")
-      interval -> Process.send_after(self(), :refresh, interval)
+      :manual ->
+        Logger.debug("Scheduling refresh was skipped due to manual mode.")
+
+      interval ->
+        Process.send_after(self(), :refresh, interval)
     end
 
     :ok
@@ -61,6 +65,14 @@ defmodule CurrencyConversion.UpdateWorker do
       {:error, error} ->
         Logger.error("An error occured while rereshing currency rates. " <> inspect(error))
         {:error, error}
+    end
+  end
+
+  @spec refresh_rates() :: {:ok, Rates.t()} | {:error, string}
+  def refresh_rates do
+    case GenServer.call(@update_worker, :refresh) do
+      :error -> {:error}
+      rates -> {:ok, rates}
     end
   end
 
